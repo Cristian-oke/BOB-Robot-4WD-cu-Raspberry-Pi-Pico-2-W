@@ -1,0 +1,7 @@
+// serviciul oficial din BTstack 
+
+PRIMARY_SERVICE, GAP_SERVICE
+CHARACTERISTIC, GAP_DEVICE_NAME, READ, "BOB2"
+
+// import serviciul Nordic UART Service
+#import <nordic_spp_service.gatt>
