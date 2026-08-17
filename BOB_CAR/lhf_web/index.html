@@ -98,7 +98,7 @@
 </head>
 <body>
 
-<h1>🤖 BOB CONTROL</h1>
+<h1> BOB CONTROL</h1>
 
 <div id="status-bar">
   <div id="dot" class="connecting"></div>
@@ -132,8 +132,8 @@
 
 <script>
 const WS_URL = `ws://${location.hostname}/ws`;
-const MAX_DIST = 100; // Pixeli maximi de la centru
-const MAX_OUTPUT = 45; // Valoarea maxima trimisa la robot (echivalent tilt)
+const MAX_DIST = 100; 
+const MAX_OUTPUT = 45;
 
 let ws = null;
 let mode = 'touch'; // 'touch' sau 'gyro'
@@ -145,7 +145,7 @@ const valBeta = document.getElementById('val-beta');
 const valGamma = document.getElementById('val-gamma');
 const dirLabel = document.getElementById('dir-label');
 
-// ── WebSocket ─────────────────────────────────────────────────
+// WebSocket
 function connectWS() {
   ws = new WebSocket(WS_URL);
   ws.onopen  = () => setStatus('ok', 'Conectat la BOB ✓');
@@ -157,7 +157,7 @@ function sendData(beta, gamma) {
   }
 }
 
-// ── Touch Control (Joystick) ──────────────────────────────────
+// Touch Control (Joystick)
 let drag = false;
 ball.addEventListener('touchstart', (e) => { drag = true; mode = 'touch'; updateModes(); });
 window.addEventListener('touchend', () => { 
@@ -170,7 +170,7 @@ window.addEventListener('touchend', () => {
 });
 window.addEventListener('touchmove', (e) => {
   if (!drag || mode !== 'touch') return;
-  e.preventDefault(); // OPRESTE SCROLL-UL PAGINII!
+  e.preventDefault(); 
   const touch = e.touches[0];
   const rect = container.getBoundingClientRect();
   const centerX = rect.left + rect.width / 2;
@@ -187,7 +187,6 @@ window.addEventListener('touchmove', (e) => {
   
   ball.style.transform = `translate(${dx}px, ${dy}px) translate(-50%, -50%)`;
   
-  // Mapam la -45...45 (ca la giroscop)
   const outGamma = (dx / MAX_DIST) * MAX_OUTPUT;
   const outBeta  = -(dy / MAX_DIST) * MAX_OUTPUT;
   
@@ -201,7 +200,7 @@ function resetBall() {
   setTimeout(() => ball.style.transition = '', 200);
 }
 
-// ── Gyro Control ──────────────────────────────────────────────
+// Gyroscope Control
 window.addEventListener('deviceorientation', (e) => {
   if (mode !== 'gyro') return;
   if (e.beta === null) return;
@@ -211,13 +210,12 @@ window.addEventListener('deviceorientation', (e) => {
   updateUI(beta, gamma);
   sendData(beta, gamma);
   
-  // Update ball pos vizual
   const bx = (gamma / MAX_OUTPUT) * MAX_DIST;
   const by = -(beta / MAX_OUTPUT) * MAX_DIST;
   ball.style.transform = `translate(${bx}px, ${by}px) translate(-50%, -50%)`;
 });
 
-// ── UI Logic ──────────────────────────────────────────────────
+//UI Logic
 function updateUI(beta, gamma) {
   valBeta.textContent = Math.round(beta) + '°';
   valGamma.textContent = Math.round(gamma) + '°';
