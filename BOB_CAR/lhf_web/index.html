@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>BOB — Control Joystick</title>
+<style>
+  :root {
+    --accent: #00e5ff;
+    --bg: #0a0e1a;
+    --card: #111827;
+    --ok: #00e676;
+    --warn: #ff9800;
+    --err: #ff1744;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: #e0e0e0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh; gap: 20px; padding: 16px;
+    touch-action: none; user-select: none;
+  }
+  h1 {
+    font-size: 2rem; font-weight: 800; letter-spacing: 4px;
+    background: linear-gradient(135deg, var(--accent), #7c4dff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  #status-bar {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--card); border-radius: 12px; padding: 10px 20px;
+    border: 1px solid #1e293b; font-size: 0.9rem;
+  }
+  #dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--err); transition: background .4s;
+  }
+  #dot.ok { background: var(--ok); box-shadow: 0 0 10px var(--ok); }
+  #dot.connecting { background: var(--warn); animation: pulse 1s infinite; }
+
+  /* Joystick Container */
+  #joystick-container {
+    width: 260px; height: 260px;
+    background: var(--card); border-radius: 50%;
+    border: 3px solid #1e293b;
+    position: relative; overflow: visible;
+    box-shadow: 0 0 50px rgba(0,229,255,.1);
+    display: flex; align-items: center; justify-content: center;
+  }
+  #joystick-ring {
+    width: 100%; height: 100%; border-radius: 50%;
+    border: 1px dashed rgba(0,229,255,0.2);
+    position: absolute;
+  }
+  #ball {
+    width: 70px; height: 70px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, var(--accent), #0288d1);
+    position: absolute; cursor: pointer;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 15px var(--accent);
+    touch-action: none;
+    z-index: 10;
+  }
+
+  /* Date numerice */
+  #data-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; width: 280px;
+  }
+  .data-card {
+    background: var(--card); border-radius: 12px;
+    padding: 12px; text-align: center;
+    border: 1px solid #1e293b;
+  }
+  .data-card .label { font-size: .65rem; color: #64748b; letter-spacing: 1px; }
+  .data-card .value {
+    font-size: 1.4rem; font-weight: 700;
+    color: var(--accent); margin-top: 4px;
+  }
+
+  #dir-label {
+    font-size: 1.2rem; font-weight: 700; letter-spacing: 2px; 
+    color: #475569; text-transform: uppercase;
+  }
+  #dir-label.active { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+
+  #hint { font-size: .8rem; color: #475569; max-width: 280px; text-align: center; line-height: 1.4; }
+  
+  .btn-row { display: flex; gap: 10px; }
+  button {
+    background: #1e293b; color: white; border: none;
+    padding: 12px 20px; border-radius: 8px; font-weight: 600;
+    cursor: pointer; border: 1px solid #334155;
+  }
+  button.active { background: var(--accent); color: #000; border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<h1>🤖 BOB CONTROL</h1>
+
+<div id="status-bar">
+  <div id="dot" class="connecting"></div>
+  <span id="status-text">Se conecteaza...</span>
+</div>
+
+<div id="joystick-container" id="zone">
+  <div id="joystick-ring"></div>
+  <div id="ball"></div>
+</div>
+
+<div id="dir-label">STAI</div>
+
+<div id="data-grid">
+  <div class="data-card">
+    <div class="label">VITEZĂ (BETA)</div>
+    <div class="value" id="val-beta">0</div>
+  </div>
+  <div class="data-card">
+    <div class="label">VIRAJ (GAMMA)</div>
+    <div class="value" id="val-gamma">0</div>
+  </div>
+</div>
+
+<div class="btn-row">
+  <button id="mode-touch" class="active">Joystick Tactil</button>
+  <button id="mode-gyro">Giroscop</button>
+</div>
+
+<p id="hint">Trage de bila albastră pentru a conduce sau activează Giroscopul (dacă browserul permite).</p>
+
+<script>
+const WS_URL = `ws://${location.hostname}/ws`;
+const MAX_DIST = 100; // Pixeli maximi de la centru
+const MAX_OUTPUT = 45; // Valoarea maxima trimisa la robot (echivalent tilt)
+
+let ws = null;
+let mode = 'touch'; // 'touch' sau 'gyro'
+let gyroActive = false;
+
+const ball = document.getElementById('ball');
+const container = document.getElementById('joystick-container');
+const valBeta = document.getElementById('val-beta');
+const valGamma = document.getElementById('val-gamma');
+const dirLabel = document.getElementById('dir-label');
+
+// ── WebSocket ─────────────────────────────────────────────────
+function connectWS() {
+  ws = new WebSocket(WS_URL);
+  ws.onopen  = () => setStatus('ok', 'Conectat la BOB ✓');
+  ws.onclose = () => { setStatus('err', 'Deconectat. Reconect...'); setTimeout(connectWS, 1500); };
+}
+function sendData(beta, gamma) {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ b: Math.round(beta), g: Math.round(gamma) }));
+  }
+}
+
+// ── Touch Control (Joystick) ──────────────────────────────────
+let drag = false;
+ball.addEventListener('touchstart', (e) => { drag = true; mode = 'touch'; updateModes(); });
+window.addEventListener('touchend', () => { 
+  if (drag) {
+    drag = false; 
+    resetBall(); 
+    sendData(0, 0); 
+    updateUI(0, 0);
+  }
+});
+window.addEventListener('touchmove', (e) => {
+  if (!drag || mode !== 'touch') return;
+  e.preventDefault(); // OPRESTE SCROLL-UL PAGINII!
+  const touch = e.touches[0];
+  const rect = container.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  
+  let dx = touch.clientX - centerX;
+  let dy = touch.clientY - centerY;
+  
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  if (dist > MAX_DIST) {
+    dx *= MAX_DIST / dist;
+    dy *= MAX_DIST / dist;
+  }
+  
+  ball.style.transform = `translate(${dx}px, ${dy}px) translate(-50%, -50%)`;
+  
+  // Mapam la -45...45 (ca la giroscop)
+  const outGamma = (dx / MAX_DIST) * MAX_OUTPUT;
+  const outBeta  = -(dy / MAX_DIST) * MAX_OUTPUT;
+  
+  updateUI(outBeta, outGamma);
+  sendData(outBeta, outGamma);
+}, { passive: false });
+
+function resetBall() {
+  ball.style.transition = 'transform 0.2s';
+  ball.style.transform = 'translate(0,0) translate(-50%, -50%)';
+  setTimeout(() => ball.style.transition = '', 200);
+}
+
+// ── Gyro Control ──────────────────────────────────────────────
+window.addEventListener('deviceorientation', (e) => {
+  if (mode !== 'gyro') return;
+  if (e.beta === null) return;
+  const beta = Math.max(-MAX_OUTPUT, Math.min(MAX_OUTPUT, e.beta));
+  const gamma = Math.max(-MAX_OUTPUT, Math.min(MAX_OUTPUT, e.gamma));
+  
+  updateUI(beta, gamma);
+  sendData(beta, gamma);
+  
+  // Update ball pos vizual
+  const bx = (gamma / MAX_OUTPUT) * MAX_DIST;
+  const by = -(beta / MAX_OUTPUT) * MAX_DIST;
+  ball.style.transform = `translate(${bx}px, ${by}px) translate(-50%, -50%)`;
+});
+
+// ── UI Logic ──────────────────────────────────────────────────
+function updateUI(beta, gamma) {
+  valBeta.textContent = Math.round(beta) + '°';
+  valGamma.textContent = Math.round(gamma) + '°';
+  
+  let dirs = [];
+  if (beta > 10) dirs.push("ÎNAINTE");
+  if (beta < -10) dirs.push("ÎNAPOI");
+  if (gamma > 10) dirs.push("DREAPTA");
+  if (gamma < -10) dirs.push("STÂNGA");
+  
+  if (dirs.length) {
+    dirLabel.textContent = dirs.join(' + ');
+    dirLabel.className = 'active';
+  } else {
+    dirLabel.textContent = "STAI";
+    dirLabel.className = '';
+  }
+}
+
+function setStatus(state, msg) {
+  const dot = document.getElementById('dot');
+  dot.className = state === 'ok' ? 'ok' : '';
+  document.getElementById('status-text').textContent = msg;
+}
+
+function updateModes() {
+  document.getElementById('mode-touch').className = mode === 'touch' ? 'active' : '';
+  document.getElementById('mode-gyro').className = mode === 'gyro' ? 'active' : '';
+}
+
+document.getElementById('mode-touch').onclick = () => { mode = 'touch'; resetBall(); updateModes(); };
+document.getElementById('mode-gyro').onclick = async () => { 
+  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+    const res = await DeviceOrientationEvent.requestPermission();
+    if (res !== 'granted') return;
+  }
+  mode = 'gyro'; 
+  updateModes(); 
+};
+
+connectWS();
+resetBall();
+</script>
+</body>
+</html>
