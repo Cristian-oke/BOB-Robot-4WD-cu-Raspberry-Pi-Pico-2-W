@@ -1,0 +1,34 @@
+
+# fișierele de compilare
+build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.ninja
+*.elf
+*.uf2
+*.bin
+*.map
+*.hex
+*.dis
+*.o
+*.a
+*.obj
+
+# fișiere vechi Python
+*.py
+*.pyc
+__pycache__/
+
+# setări specifice IDE și sistem de operare
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
