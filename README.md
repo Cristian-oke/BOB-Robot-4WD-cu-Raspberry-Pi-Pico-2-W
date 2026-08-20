@@ -42,11 +42,11 @@ Am comutat în modul Joystick Web (`g`), ne-am conectat telefonul la AP-ul `BOB-
 ## 4. Arhitectură hardware
 
 ### Diagramă bloc hardware
-<img width="1207" height="662" alt="image" src="https://github.tuiasi.ro/user-attachments/assets/d91300e9-5b64-47d0-bb2a-7c19847bf3b1" />
+<img width="1207" height="662" alt="image" src="resources/diagrama_bloc_hardware.png" />
 
 
 ### Schema electrică
-<img width="1139" height="687" alt="image" src="https://github.tuiasi.ro/user-attachments/assets/78732307-9e2c-4a0b-9bb8-e68af6731d7b" />
+<img width="1139" height="687" alt="image" src="resources/schema_electrica.png" />
 
 
 ### Lista de componente hardware
@@ -111,7 +111,7 @@ Am comutat în modul Joystick Web (`g`), ne-am conectat telefonul la AP-ul `BOB-
 Am conceput software-ul având la bază o arhitectură concurentă (multi-core), maximizând capabilitățile Pico 2 W.
 
 ### Schema bloc software
-<img width="986" height="668" alt="image" src="https://github.tuiasi.ro/user-attachments/assets/f19b90b9-2c5f-4868-99ab-57500a189515" />
+<img width="986" height="668" alt="image" src="resources/schema_bloc_software.png" />
 
 
 ### Detalii arhitectură:
@@ -174,13 +174,13 @@ BOB_CAR/
 ## 9. Documentare foto și video
 
 ### Video: Prezentare generală și Evitare Obstacole
-https://github.tuiasi.ro/user-attachments/assets/586684b1-d8a2-4f5e-af3c-0cc3a6788b6b
+resources/video_evitare_obstacole.mp4
 
 ### Video: Modul Follow-Me
-https://github.tuiasi.ro/user-attachments/assets/73d60fed-a636-4e0b-b3fa-dc61030b71d8
+resources/video_follow_me.mp4
 
 ### Video: Interfața Web (Joystick Virtual)
-https://github.tuiasi.ro/user-attachments/assets/f384c916-fb1f-4ce0-a292-b8915bdc1a6f
+resources/video_interfata_web.mp4
 
 
 
@@ -188,6 +188,6 @@ https://github.tuiasi.ro/user-attachments/assets/f384c916-fb1f-4ce0-a292-b8915bd
 
 ### Poze proiect
 <img width="1920" height="1080" alt="image" src="resources/BOB_poza_1.png" />
-<img width="1920" height="1080" alt="image" src="https://github.tuiasi.ro/user-attachments/assets/31290df5-a259-4f60-9b4e-1bbab8bdc850" />
+<img width="1920" height="1080" alt="image" src="resources/BOB_poza_3.png" />
 
 
