@@ -1,13 +1,5 @@
 # BOB — Robot 4WD cu Raspberry Pi Pico 2 W
 
-**Echipă:** 
-- Pavel Stefan
-- Burlacu Cristian Stefan
-
-**Grupa:** 1309A
-
----
-
 ## 1. Descriere generală
 BOB este un robot mobil cu tracțiune integrală (4WD) construit pe platforma **Raspberry Pi Pico 2 W**. 
 Scopul proiectului a fost dezvoltarea unui sistem autonom și controlabil de la distanță, capabil să evite obstacole, să urmărească un utilizator (Follow-Me) și să fie ghidat folosind un joystick virtual tactil prin intermediul unei interfețe web.
@@ -195,7 +187,7 @@ https://github.tuiasi.ro/user-attachments/assets/f384c916-fb1f-4ce0-a292-b8915bd
 
 
 ### Poze proiect
-<img width="1920" height="1080" alt="image" src="https://github.tuiasi.ro/user-attachments/assets/ca057d9e-10b1-419f-9ed8-dd632ac84bdf" />
+<img width="1920" height="1080" alt="image" src="resources/BOB_poza_1.png" />
 <img width="1920" height="1080" alt="image" src="https://github.tuiasi.ro/user-attachments/assets/31290df5-a259-4f60-9b4e-1bbab8bdc850" />
 
 
