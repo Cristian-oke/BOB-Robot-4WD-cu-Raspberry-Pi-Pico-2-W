@@ -1,3 +1,4 @@
+
 # BOB — Robot 4WD cu Raspberry Pi Pico 2 W
 
 ## 1. Descriere generală
@@ -175,15 +176,15 @@ BOB_CAR/
 
 ### Video: Prezentare generală și Evitare Obstacole
 
+https://github.com/user-attachments/assets/d245757f-ec50-45d9-99bc-d71358449653
 
 ### Video: Modul Follow-Me
 
+https://github.com/user-attachments/assets/5a8c071c-6f2c-4aa1-a782-c086ef53b368
 
 ### Video: Interfața Web (Joystick Virtual)
 
-
-
-
+https://github.com/user-attachments/assets/1e96402f-51c9-4793-aade-cf16133aa562
 
 ### Poze proiect
 <img width="1920" height="1080" alt="image" src="resources/BOB_poza_1.png" />
