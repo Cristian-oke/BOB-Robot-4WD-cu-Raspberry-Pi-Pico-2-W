@@ -174,14 +174,13 @@ BOB_CAR/
 ## 9. Documentare foto și video
 
 ### Video: Prezentare generală și Evitare Obstacole
-resources/video_evitare_obstacole.mp4
+[🎥 Vezi videoclipul](resources/video_evitare_obstacole.mp4)
 
 ### Video: Modul Follow-Me
-resources/video_follow_me.mp4
+[🎥 Vezi videoclipul](resources/video_follow_me.mp4)
 
 ### Video: Interfața Web (Joystick Virtual)
-resources/video_interfata_web.mp4
-
+[🎥 Vezi videoclipul](resources/video_interfata_web.mp4)
 
 
 
